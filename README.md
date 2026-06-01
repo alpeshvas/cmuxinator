@@ -6,6 +6,27 @@ A cmuxinator project is one config file under `~/.config/cmuxinator/` that opens
 
 ## Install
 
+With Homebrew:
+
+```sh
+brew tap alpeshvas/homebrew https://github.com/alpeshvas/homebrew.git
+brew install cmuxinator
+```
+
+cmuxinator shells out to `cmux`; install cmux separately if needed:
+
+```sh
+brew install --cask cmux
+```
+
+From source:
+
+```sh
+cargo install --git https://github.com/alpeshvas/cmuxinator
+```
+
+For local development:
+
 ```sh
 cargo install --path ~/codebase/cmuxinator
 ```
