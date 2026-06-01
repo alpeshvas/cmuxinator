@@ -1,7 +1,10 @@
 [package]
 name = "cmuxinator"
-version = "0.1.0"
+version = "0.1.1"
 edition = "2024"
+description = "Start cmux projects from tmuxinator-style YAML files"
+repository = "https://github.com/alpeshvas/cmuxinator"
+license = "MIT"
 
 [dependencies]
 anyhow = "1"
