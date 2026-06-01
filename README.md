@@ -9,7 +9,7 @@ A cmuxinator project is one config file under `~/.config/cmuxinator/` that opens
 With Homebrew:
 
 ```sh
-brew tap alpeshvas/homebrew https://github.com/alpeshvas/homebrew.git
+brew tap alpeshvas/cmuxinator
 brew install cmuxinator
 ```
 
