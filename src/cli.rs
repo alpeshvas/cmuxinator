@@ -15,6 +15,9 @@ pub enum Command {
     Start {
         /// Project name from ~/.config/cmuxinator/<project>.yml.
         project: String,
+        /// Do not create a cmux workspace group for the project workspaces.
+        #[arg(long)]
+        no_group: bool,
         /// Optional workspace names to start from the project.
         workspaces: Vec<String>,
     },
@@ -23,6 +26,9 @@ pub enum Command {
     DryRun {
         /// Project name from ~/.config/cmuxinator/<project>.yml.
         project: String,
+        /// Do not include workspace-group commands in the dry-run output.
+        #[arg(long)]
+        no_group: bool,
         /// Optional workspace names to dry-run from the project.
         workspaces: Vec<String>,
     },

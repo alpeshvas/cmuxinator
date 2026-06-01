@@ -4,7 +4,11 @@ use crate::cmux::NewWorkspaceSpec;
 
 const DRY_RUN_WINDOW_HANDLE: &str = "<new-window>";
 
-pub fn print_dry_run(specs: &[NewWorkspaceSpec]) -> Result<()> {
+pub fn print_dry_run(
+    project_name: &str,
+    specs: &[NewWorkspaceSpec],
+    create_group: bool,
+) -> Result<()> {
     println!("cmuxinator dry-run: {} workspace(s)", specs.len());
     println!();
     println!("# create project window");
@@ -19,10 +23,19 @@ pub fn print_dry_run(specs: &[NewWorkspaceSpec]) -> Result<()> {
     }
 
     println!();
-    println!("# close placeholder workspace(s) created by cmux new-window");
+    println!("# close placeholder workspace(s) created by cmux window.create");
     println!(
         "cmux close-workspace --workspace <placeholder-workspace> --window {DRY_RUN_WINDOW_HANDLE}"
     );
+
+    if create_group && specs.len() > 1 {
+        println!();
+        println!("# group project workspaces under a collapsible sidebar header");
+        println!(
+            "cmux workspace-group create --name {} --from <created-workspace-refs> --window {}",
+            project_name, DRY_RUN_WINDOW_HANDLE
+        );
+    }
 
     Ok(())
 }

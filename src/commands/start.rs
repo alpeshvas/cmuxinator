@@ -8,18 +8,31 @@ use crate::{
     formatting, layout, paths,
 };
 
-pub fn run(project: &str, selected_workspaces: &[String]) -> Result<()> {
-    let specs = build_specs(project, selected_workspaces)?;
+struct StartPlan {
+    project_name: String,
+    specs: Vec<NewWorkspaceSpec>,
+}
+
+pub fn run(project: &str, selected_workspaces: &[String], create_group: bool) -> Result<()> {
+    let plan = build_plan(project, selected_workspaces)?;
     cmux::ensure_available()?;
 
     let window = cmux::new_window()?;
     let placeholder_workspaces = cmux::workspace_refs(&window)?;
     println!("Created window {window}");
 
-    for (index, spec) in specs.iter().enumerate() {
+    let mut created_workspace_refs = Vec::new();
+    for (index, spec) in plan.specs.iter().enumerate() {
+        let before = cmux::workspace_refs(&window)?
+            .into_iter()
+            .collect::<HashSet<_>>();
         cmux::new_workspace(spec, &window, index == 0)
             .with_context(|| format!("failed to start workspace {}", spec.name))?;
         println!("Started workspace {}", spec.name);
+
+        let new_ref = new_workspace_ref(&window, &before)
+            .with_context(|| format!("failed to locate created workspace {}", spec.name))?;
+        created_workspace_refs.push(new_ref);
     }
 
     for workspace_ref in placeholder_workspaces {
@@ -27,21 +40,46 @@ pub fn run(project: &str, selected_workspaces: &[String]) -> Result<()> {
             .with_context(|| format!("failed to close placeholder workspace {workspace_ref}"))?;
     }
 
+    if create_group && created_workspace_refs.len() > 1 {
+        cmux::create_workspace_group(&plan.project_name, &created_workspace_refs, &window)
+            .with_context(|| format!("failed to create workspace group {}", plan.project_name))?;
+        println!("Grouped workspaces under {}", plan.project_name);
+    }
+
     Ok(())
 }
 
-pub fn dry_run(project: &str, selected_workspaces: &[String]) -> Result<()> {
-    let specs = build_specs(project, selected_workspaces)?;
-    formatting::print_dry_run(&specs)
+pub fn dry_run(project: &str, selected_workspaces: &[String], create_group: bool) -> Result<()> {
+    let plan = build_plan(project, selected_workspaces)?;
+    formatting::print_dry_run(&plan.project_name, &plan.specs, create_group)
 }
 
-fn build_specs(
-    project_name: &str,
-    selected_workspaces: &[String],
-) -> Result<Vec<NewWorkspaceSpec>> {
+fn build_plan(project_name: &str, selected_workspaces: &[String]) -> Result<StartPlan> {
     let loaded = config::load_project(project_name)?;
     loaded.project.validate()?;
-    select_specs(&loaded.project, selected_workspaces)
+    let project_name = loaded.project.name.clone();
+    let specs = select_specs(&loaded.project, selected_workspaces)?;
+    Ok(StartPlan {
+        project_name,
+        specs,
+    })
+}
+
+fn new_workspace_ref(window: &str, before: &HashSet<String>) -> Result<String> {
+    let after = cmux::workspace_refs(window)?;
+    let created = after
+        .into_iter()
+        .filter(|workspace_ref| !before.contains(workspace_ref))
+        .collect::<Vec<_>>();
+
+    match created.as_slice() {
+        [workspace_ref] => Ok(workspace_ref.clone()),
+        [] => Err(anyhow!("no new workspace appeared in window {window}")),
+        _ => Err(anyhow!(
+            "multiple new workspaces appeared in window {window}: {}",
+            created.join(", ")
+        )),
+    }
 }
 
 fn select_specs(

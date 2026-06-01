@@ -123,6 +123,33 @@ pub fn close_workspace(workspace_ref: &str, window: &str) -> Result<()> {
     Ok(())
 }
 
+pub fn create_workspace_group(name: &str, workspace_refs: &[String], window: &str) -> Result<()> {
+    if workspace_refs.len() < 2 {
+        return Ok(());
+    }
+
+    let output = Command::new("cmux")
+        .arg("workspace-group")
+        .arg("create")
+        .arg("--name")
+        .arg(name)
+        .arg("--from")
+        .arg(workspace_refs.join(","))
+        .arg("--window")
+        .arg(window)
+        .output()
+        .with_context(|| format!("failed to execute cmux workspace-group create for {name}"))?;
+
+    if !output.status.success() {
+        return Err(anyhow!(
+            "cmux workspace-group create failed for {name}: {}",
+            stderr_or_status(&output)
+        ));
+    }
+
+    Ok(())
+}
+
 fn parse_window_create_id(output: &[u8]) -> Result<String> {
     let value: Value =
         serde_json::from_slice(output).context("failed to parse window.create JSON")?;
