@@ -37,6 +37,32 @@ Optional short alias:
 alias cmx='cmuxinator'
 ```
 
+## Shell completion
+
+cmuxinator can generate dynamic shell completions, including subcommands, flags, project names from `~/.config/cmuxinator/*.yml`, and the selected project's workspace names for `start` / `dry-run`.
+
+Add the line for your shell to your shell startup file:
+
+```sh
+# zsh
+source <(COMPLETE=zsh cmuxinator)
+
+# bash
+source <(COMPLETE=bash cmuxinator)
+
+# fish
+COMPLETE=fish cmuxinator | source
+```
+
+For the optional zsh alias, add this after sourcing completions:
+
+```sh
+alias cmx='cmuxinator'
+compdef _clap_dynamic_completer_cmuxinator cmx
+```
+
+Re-source completions after upgrading cmuxinator.
+
 ## Commands
 
 ```sh

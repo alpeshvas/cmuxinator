@@ -1,4 +1,9 @@
-use std::{collections::HashSet, fs, path::PathBuf};
+use std::{
+    collections::{BTreeSet, HashSet},
+    fs,
+    io::ErrorKind,
+    path::PathBuf,
+};
 
 use anyhow::{Context, Result, anyhow};
 use serde::Deserialize;
@@ -60,6 +65,62 @@ pub enum LayoutPreset {
 pub struct LoadedProject {
     pub project: Project,
     pub path: PathBuf,
+}
+
+pub fn available_projects() -> Result<Vec<String>> {
+    let dir = paths::config_dir()?;
+    let entries = match fs::read_dir(&dir) {
+        Ok(entries) => entries,
+        Err(error) if error.kind() == ErrorKind::NotFound => return Ok(Vec::new()),
+        Err(error) => {
+            return Err(error)
+                .with_context(|| format!("failed to read config directory {}", dir.display()));
+        }
+    };
+
+    let mut projects = BTreeSet::new();
+    for entry in entries {
+        let entry = entry.with_context(|| format!("failed to read entry in {}", dir.display()))?;
+        let path = entry.path();
+        let Some(extension) = path.extension().and_then(|extension| extension.to_str()) else {
+            continue;
+        };
+        if !matches!(extension, "yml" | "yaml") {
+            continue;
+        }
+        let Some(stem) = path.file_stem().and_then(|stem| stem.to_str()) else {
+            continue;
+        };
+        projects.insert(stem.to_string());
+    }
+
+    Ok(projects.into_iter().collect())
+}
+
+pub fn available_workspace_names() -> Result<Vec<String>> {
+    let mut workspace_names = BTreeSet::new();
+
+    for project in available_projects()? {
+        let Ok(names) = workspace_names_for_project(&project) else {
+            continue;
+        };
+
+        workspace_names.extend(names);
+    }
+
+    Ok(workspace_names.into_iter().collect())
+}
+
+pub fn workspace_names_for_project(project: &str) -> Result<Vec<String>> {
+    let loaded = load_project(project)?;
+    let names = loaded
+        .project
+        .workspaces
+        .into_iter()
+        .map(|workspace| workspace.name)
+        .collect::<BTreeSet<_>>();
+
+    Ok(names.into_iter().collect())
 }
 
 impl Project {

@@ -1,6 +1,7 @@
 mod cli;
 mod cmux;
 mod commands;
+mod completion;
 mod config;
 mod formatting;
 mod layout;
@@ -8,10 +9,12 @@ mod paths;
 mod templates;
 
 use anyhow::Result;
-use clap::Parser;
+use clap::{CommandFactory, Parser};
 use cli::{Cli, Command};
 
 fn main() -> Result<()> {
+    clap_complete::CompleteEnv::with_factory(Cli::command).complete();
+
     let cli = Cli::parse();
 
     match cli.command {

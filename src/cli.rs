@@ -1,4 +1,5 @@
 use clap::{Parser, Subcommand};
+use clap_complete::engine::ArgValueCompleter;
 
 #[derive(Debug, Parser)]
 #[command(name = "cmuxinator")]
@@ -14,22 +15,26 @@ pub enum Command {
     /// Create a new cmux window and open all or selected project workspaces.
     Start {
         /// Project name from ~/.config/cmuxinator/<project>.yml.
+        #[arg(add = ArgValueCompleter::new(crate::completion::project_completer))]
         project: String,
         /// Do not create a cmux workspace group for the project workspaces.
         #[arg(long)]
         no_group: bool,
         /// Optional workspace names to start from the project.
+        #[arg(add = ArgValueCompleter::new(crate::completion::workspace_completer))]
         workspaces: Vec<String>,
     },
 
     /// Print generated cmux calls and layout JSON without changing cmux.
     DryRun {
         /// Project name from ~/.config/cmuxinator/<project>.yml.
+        #[arg(add = ArgValueCompleter::new(crate::completion::project_completer))]
         project: String,
         /// Do not include workspace-group commands in the dry-run output.
         #[arg(long)]
         no_group: bool,
         /// Optional workspace names to dry-run from the project.
+        #[arg(add = ArgValueCompleter::new(crate::completion::workspace_completer))]
         workspaces: Vec<String>,
     },
 
@@ -48,6 +53,7 @@ pub enum Command {
     /// Validate a project file without changing cmux.
     Validate {
         /// Project name from ~/.config/cmuxinator/<project>.yml.
+        #[arg(add = ArgValueCompleter::new(crate::completion::project_completer))]
         project: String,
     },
 }
