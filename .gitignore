@@ -1,0 +1,16 @@
+/target/
+
+# Local environment and secrets
+.env
+.env.*
+!.env.example
+
+# OS/editor noise
+.DS_Store
+.idea/
+.vscode/
+*.swp
+*.swo
+
+# Rust backup files
+**/*.rs.bk
