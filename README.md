@@ -2,7 +2,7 @@
 
 A Rust CLI for starting cmux projects from tmuxinator-style YAML files.
 
-A cmuxinator project is one config file under `~/.config/cmuxinator/` that opens a new cmux window, creates the project's cmux workspaces inside it, and groups those workspaces under a collapsible project header when there is more than one workspace. cmux creates a placeholder workspace when a new window is opened; cmuxinator closes that placeholder after creating the project workspaces.
+A cmuxinator project is one config file under `~/.config/cmuxinator/` that opens a new cmux window and creates the project's cmux workspaces inside it. By default, workspaces are left ungrouped; pass `--group` to place multiple workspaces under a collapsible project header. cmux creates a placeholder workspace when a new window is opened; cmuxinator closes that placeholder after creating the project workspaces.
 
 ## Install
 
@@ -69,9 +69,10 @@ Re-source completions after upgrading cmuxinator.
 cmuxinator new dex              # scaffold ~/.config/cmuxinator/dex.yml
 cmuxinator list                 # list projects
 cmuxinator validate dex         # parse and validate config, check cmux is available
-cmuxinator dry-run dex          # print generated cmux calls, group command, and layout JSON
-cmuxinator start dex            # create a new cmux window, open workspaces, group them
-cmuxinator start dex --no-group # open workspaces without creating a workspace group
+cmuxinator dry-run dex          # print generated cmux calls and layout JSON
+cmuxinator dry-run dex --group  # include the workspace-group command in dry-run output
+cmuxinator start dex            # create a new cmux window and open workspaces without grouping
+cmuxinator start dex --group    # open workspaces and group them under the project name
 cmuxinator start dex agents     # create a new cmux window and open selected workspace(s)
 ```
 

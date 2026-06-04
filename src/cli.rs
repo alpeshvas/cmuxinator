@@ -17,8 +17,11 @@ pub enum Command {
         /// Project name from ~/.config/cmuxinator/<project>.yml.
         #[arg(add = ArgValueCompleter::new(crate::completion::project_completer))]
         project: String,
-        /// Do not create a cmux workspace group for the project workspaces.
-        #[arg(long)]
+        /// Create a cmux workspace group for the project workspaces.
+        #[arg(long, conflicts_with = "no_group")]
+        group: bool,
+        /// Deprecated no-op: grouping is disabled by default.
+        #[arg(long, hide = true)]
         no_group: bool,
         /// Optional workspace names to start from the project.
         #[arg(add = ArgValueCompleter::new(crate::completion::workspace_completer))]
@@ -30,8 +33,11 @@ pub enum Command {
         /// Project name from ~/.config/cmuxinator/<project>.yml.
         #[arg(add = ArgValueCompleter::new(crate::completion::project_completer))]
         project: String,
-        /// Do not include workspace-group commands in the dry-run output.
-        #[arg(long)]
+        /// Include workspace-group commands in the dry-run output.
+        #[arg(long, conflicts_with = "no_group")]
+        group: bool,
+        /// Deprecated no-op: grouping is disabled by default.
+        #[arg(long, hide = true)]
         no_group: bool,
         /// Optional workspace names to dry-run from the project.
         #[arg(add = ArgValueCompleter::new(crate::completion::workspace_completer))]

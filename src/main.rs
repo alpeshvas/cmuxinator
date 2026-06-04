@@ -13,6 +13,9 @@ use clap::{CommandFactory, Parser};
 use cli::{Cli, Command};
 
 fn main() -> Result<()> {
+    if completion::try_complete_project_or_workspace()? {
+        return Ok(());
+    }
     clap_complete::CompleteEnv::with_factory(Cli::command).complete();
 
     let cli = Cli::parse();
@@ -20,14 +23,16 @@ fn main() -> Result<()> {
     match cli.command {
         Command::Start {
             project,
-            no_group,
+            group,
             workspaces,
-        } => commands::start::run(&project, &workspaces, !no_group),
+            ..
+        } => commands::start::run(&project, &workspaces, group),
         Command::DryRun {
             project,
-            no_group,
+            group,
             workspaces,
-        } => commands::start::dry_run(&project, &workspaces, !no_group),
+            ..
+        } => commands::start::dry_run(&project, &workspaces, group),
         Command::List => commands::list::run(),
         Command::New { project, force } => commands::new::run(&project, force),
         Command::Validate { project } => commands::validate::run(&project),
