@@ -1,0 +1,91 @@
+{
+  "$schema": "https://www.raycast.com/schemas/extension.json",
+  "name": "cmuxinator",
+  "title": "Cmuxinator",
+  "description": "Focus the cmux window for a cmuxinator project, or start it if it isn't running",
+  "icon": "icon.png",
+  "author": "alpesh",
+  "categories": [
+    "Developer Tools",
+    "Productivity"
+  ],
+  "license": "MIT",
+  "commands": [
+    {
+      "name": "open-project",
+      "title": "Open Cmux Project",
+      "subtitle": "cmuxinator",
+      "description": "Focus the cmux window running this cmuxinator project, or start it",
+      "mode": "no-view",
+      "arguments": [
+        {
+          "name": "project",
+          "type": "text",
+          "placeholder": "project",
+          "required": true
+        }
+      ]
+    },
+    {
+      "name": "projects",
+      "title": "Cmux Projects",
+      "subtitle": "cmuxinator",
+      "description": "Browse cmuxinator projects and jump to their cmux windows",
+      "mode": "view"
+    }
+  ],
+  "preferences": [
+    {
+      "name": "cmuxPath",
+      "title": "cmux binary",
+      "description": "Path to the cmux CLI. Leave empty to auto-detect (/opt/homebrew/bin/cmux, /usr/local/bin/cmux).",
+      "type": "textfield",
+      "required": false,
+      "placeholder": "/opt/homebrew/bin/cmux"
+    },
+    {
+      "name": "cmuxinatorPath",
+      "title": "cmuxinator binary",
+      "description": "Path to the cmuxinator CLI. Leave empty to auto-detect (~/.cargo/bin/cmuxinator).",
+      "type": "textfield",
+      "required": false,
+      "placeholder": "~/.cargo/bin/cmuxinator"
+    },
+    {
+      "name": "socketPassword",
+      "title": "cmux socket password",
+      "description": "Only needed if cmux Settings > Automation uses password mode with a password that is not in cmux.json. Passed as CMUX_SOCKET_PASSWORD.",
+      "type": "password",
+      "required": false
+    },
+    {
+      "name": "autoStart",
+      "title": "When not running",
+      "label": "Start the project with cmuxinator if no cmux window matches",
+      "description": "Uncheck to only focus existing windows.",
+      "type": "checkbox",
+      "required": false,
+      "default": true
+    }
+  ],
+  "dependencies": {
+    "@raycast/api": "^2.2.1",
+    "yaml": "^2.9.0"
+  },
+  "devDependencies": {
+    "@raycast/eslint-config": "^2.2.0",
+    "@types/node": "^22.0.0",
+    "@types/react": "^19.0.0",
+    "eslint": "^9.0.0",
+    "prettier": "^3.0.0",
+    "tsx": "^4.0.0",
+    "typescript": "^5.0.0"
+  },
+  "scripts": {
+    "build": "ray build -e dist",
+    "dev": "ray develop",
+    "lint": "ray lint",
+    "fix-lint": "ray lint --fix",
+    "test": "tsx --test test/*.test.ts"
+  }
+}
