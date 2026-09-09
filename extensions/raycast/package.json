@@ -30,8 +30,16 @@
       "name": "projects",
       "title": "Cmux Projects",
       "subtitle": "cmuxinator",
-      "description": "Browse cmuxinator projects and jump to their cmux windows",
-      "mode": "view"
+      "description": "Browse cmuxinator projects and jump to their cmux windows; a unique name opens directly",
+      "mode": "view",
+      "arguments": [
+        {
+          "name": "project",
+          "type": "text",
+          "placeholder": "project",
+          "required": false
+        }
+      ]
     }
   ],
   "preferences": [

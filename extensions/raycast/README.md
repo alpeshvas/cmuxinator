@@ -3,7 +3,11 @@
 Two commands for jumping to [cmuxinator](https://github.com/alpeshvas/cmuxinator) projects in cmux:
 
 - **Open Cmux Project** `<project>` – focuses the cmux window that is running the project, or starts it with `cmuxinator start <project>` if none is. Give this command the alias `cmux` in Raycast so `cmux ho-agents` does what you expect. Unique prefixes work too (`cmux dex`, `cmux ho-a`).
-- **Cmux Projects** – lists every `~/.config/cmuxinator/*.yml` project with its live window, plus actions to focus, start, open another window, or open the YAML.
+- **Cmux Projects** `[project]` – lists every `~/.config/cmuxinator/*.yml` project with its live window, plus actions to focus, start, open another window, or open the YAML. With an argument that uniquely names a project it skips the list and opens it directly, so this command can carry the `cmux` alias too.
+
+Raycast text arguments have no autocomplete, so suggestions come from the list: when
+**Open Cmux Project** gets a name that matches nothing or several projects (`ho` → `ho-agents`,
+`hooter`), it opens **Cmux Projects** pre-filtered with what you typed instead of failing.
 
 ## How windows are matched
 

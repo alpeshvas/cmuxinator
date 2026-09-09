@@ -1,7 +1,9 @@
 import {
   closeMainWindow,
   getPreferenceValues,
+  launchCommand,
   LaunchProps,
+  LaunchType,
   showHUD,
   showToast,
   Toast,
@@ -24,11 +26,12 @@ export default async function Command(props: LaunchProps<{ arguments: { project:
   const project = findProject(projects, query);
 
   if (!project) {
-    const names = projects.map((p) => p.name).join(", ") || "none found in ~/.config/cmuxinator";
-    await showToast({
-      style: Toast.Style.Failure,
-      title: `No cmuxinator project matches "${query}"`,
-      message: `Known projects: ${names}`,
+    // No unique match: hand over to the list, pre-filtered with what was typed, so the
+    // user sees the candidates (e.g. "ho" -> ho-agents, hooter) instead of an error.
+    await launchCommand({
+      name: "projects",
+      type: LaunchType.UserInitiated,
+      arguments: { project: query },
     });
     return;
   }

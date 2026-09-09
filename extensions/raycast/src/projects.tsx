@@ -6,17 +6,18 @@ import {
   getPreferenceValues,
   Icon,
   Keyboard,
+  LaunchProps,
   List,
   showHUD,
   showToast,
   Toast,
 } from "@raycast/api";
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { CmuxClient, type CmuxWindow } from "./lib/cmux";
 import { matchAll, type WindowMatch } from "./lib/matcher";
 import { openProject } from "./lib/open";
 import { CMUX_CANDIDATES, resolveBinary } from "./lib/paths";
-import { loadProjects, type Project } from "./lib/projects";
+import { findProject, loadProjects, type Project } from "./lib/projects";
 
 interface Preferences {
   cmuxPath?: string;
@@ -51,8 +52,11 @@ async function loadState(prefs: Preferences): Promise<State> {
   return { projects, matches: matchAll(projects, windows), cmuxRunning, loading: false, error };
 }
 
-export default function Command() {
+export default function Command(props: LaunchProps<{ arguments: { project?: string } }>) {
   const prefs = getPreferenceValues<Preferences>();
+  const initialQuery = props.arguments?.project?.trim() ?? "";
+  const [searchText, setSearchText] = useState(initialQuery);
+  const launched = useRef(false);
   const [state, setState] = useState<State>({
     projects: [],
     matches: new Map(),
@@ -65,7 +69,18 @@ export default function Command() {
     loadState(prefs).then(setState);
   };
 
-  useEffect(refresh, []);
+  useEffect(() => {
+    // Effects can run twice under Raycast's dev renderer; only open once.
+    if (launched.current) return;
+    launched.current = true;
+    // Launched as `cmux <name>`: a unique match needs no list, act on it straight away.
+    const direct = initialQuery ? findProject(loadProjects(), initialQuery) : undefined;
+    if (direct) {
+      void open(direct, "auto");
+      return;
+    }
+    refresh();
+  }, []);
 
   const open = async (project: Project, force: "auto" | "start") => {
     try {
@@ -164,7 +179,12 @@ export default function Command() {
   };
 
   return (
-    <List isLoading={state.loading} searchBarPlaceholder="Search cmuxinator projects…">
+    <List
+      isLoading={state.loading}
+      searchBarPlaceholder="Search cmuxinator projects…"
+      searchText={searchText}
+      onSearchTextChange={setSearchText}
+    >
       {state.error && (
         <List.Section title="Error">
           <List.Item title={state.error} icon={{ source: Icon.Warning, tintColor: Color.Red }} />
