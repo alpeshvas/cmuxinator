@@ -108,3 +108,8 @@ workspaces:
 ```
 
 Terminal is the default surface type. Browser surfaces require `type: browser` and `url`.
+
+## Raycast extension
+
+`extensions/raycast` contains a Raycast extension that focuses the cmux window running a
+cmuxinator project (or starts it). See [extensions/raycast/README.md](extensions/raycast/README.md).
