@@ -64,6 +64,16 @@ export class CmuxClient {
     }
   }
 
+  /** Poll `cmux ping` until the socket answers or the timeout elapses. */
+  async waitUntilRunning(timeoutMs: number, intervalMs = 400): Promise<boolean> {
+    const deadline = Date.now() + timeoutMs;
+    while (Date.now() < deadline) {
+      if (await this.isRunning()) return true;
+      await new Promise((resolve) => setTimeout(resolve, intervalMs));
+    }
+    return false;
+  }
+
   /** All windows with their workspaces, surfaces and live cwd. */
   async windows(): Promise<CmuxWindow[]> {
     const tree = JSON.parse(await this.run(["tree", "--all", "--json", "--id-format", "both"])) as {
@@ -137,6 +147,11 @@ interface TreeWindow {
   index: number;
   key?: boolean;
   workspaces?: TreeWorkspace[];
+}
+
+/** Launch the cmux app if it is not running; returns once `open` has handed off to launchd. */
+export async function launchCmuxApp(): Promise<void> {
+  await execFileAsync("/usr/bin/open", ["-b", "com.cmuxterm.app"], { timeout: 15_000 });
 }
 
 /** Bring the cmux app to the foreground (focus-window alone only reorders cmux's own windows). */

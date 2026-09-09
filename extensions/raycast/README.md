@@ -15,10 +15,10 @@ cmuxinator does not tag the windows it creates and every project here uses the s
 workspace titles (`agents`, `dev`), so the extension scores each live cmux window against
 the project YAML:
 
-| signal | weight |
-|---|---|
-| a configured surface name (`din-djarin`, `agent-1`, …) appears as a surface title | 3 each |
-| a configured workspace name appears as a workspace title | 2 each |
+| signal                                                                               | weight |
+| ------------------------------------------------------------------------------------ | ------ |
+| a configured surface name (`din-djarin`, `agent-1`, …) appears as a surface title    | 3 each |
+| a configured workspace name appears as a workspace title                             | 2 each |
 | a workspace's live cwd is inside a project directory (`cwd:` or `cd …` in a command) | 1 each |
 
 A window counts as running the project when at least one surface name matched, or when
@@ -42,6 +42,10 @@ so nothing else is needed. If you prefer to keep the password out of `cmux.json`
 cmux **Settings → Automation** instead and paste the same value into the extension's
 "cmux socket password" preference; it is passed to `cmux` and `cmuxinator` as
 `CMUX_SOCKET_PASSWORD`.
+
+If cmux itself is not running, the extension launches it, waits for the socket to answer,
+and then looks for the project among the restored windows before falling back to
+`cmuxinator start`. Untick "Start the project…" in preferences to disable both behaviours.
 
 Binaries are auto-detected at `/opt/homebrew/bin/cmux` and `~/.cargo/bin/cmuxinator`;
 override them in the extension preferences if yours live elsewhere.

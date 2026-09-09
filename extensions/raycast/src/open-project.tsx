@@ -45,6 +45,8 @@ export default async function Command(props: LaunchProps<{ arguments: { project:
       await showHUD(`cmux: ${project.name}`);
     } else if (outcome.kind === "started") {
       await showHUD(`cmux: started ${project.name}`);
+    } else if (outcome.kind === "cmux-not-running") {
+      await showHUD("cmux is not running");
     } else {
       await showHUD(`cmux: ${project.name} is not running`);
     }
